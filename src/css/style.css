@@ -1,0 +1,7 @@
+window {
+    padding: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: @borders;
+    /* border-radius: 8px; */
+}

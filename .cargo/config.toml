@@ -1,0 +1,3 @@
+[build]
+# XXX: workaround for whisper-rs build failure
+rustflags = ["-C", "link-args=-lstdc++"]
