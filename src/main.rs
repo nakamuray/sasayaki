@@ -371,11 +371,19 @@ fn main() -> Result<(), Error> {
                 }
                 win.label.set_text(&text);
 
-                // scroll window to bottom
+                // scroll window to bottom if last two of labels are displayed
+                // (don't scroll if you read scrollbacks)
                 glib::idle_add_local_once({
                     let scrolled = win.scrolled.clone();
+                    let check_label = win.scrollbacks.back().unwrap_or(&win.label).clone();
                     move || {
-                        scrolled.emit_scroll_child(gtk::ScrollType::End, false);
+                        let vadj = scrolled.vadjustment();
+                        if let Some((_, y)) = check_label.translate_coordinates(&scrolled, 0.0, 0.0)
+                        {
+                            if y <= vadj.page_size() {
+                                scrolled.emit_scroll_child(gtk::ScrollType::End, false);
+                            }
+                        }
                     }
                 });
 
