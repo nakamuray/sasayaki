@@ -1,3 +1,4 @@
+use adw::prelude::*;
 use anyhow::Error;
 use byte_slice_cast::*;
 use clap::Parser;
@@ -5,7 +6,6 @@ use gst::prelude::*;
 use gstreamer as gst;
 use gstreamer_app as gst_app;
 use gstreamer_audio as gst_audio;
-use gtk::prelude::*;
 use gtk::{gdk, gio, glib, pango};
 use gtk4 as gtk;
 use log::*;
@@ -169,7 +169,7 @@ fn whisper(
 
 #[derive(Clone)]
 struct Window {
-    window: gtk::ApplicationWindow,
+    window: adw::ApplicationWindow,
     scrolled: gtk::ScrolledWindow,
     vbox: gtk::Box,
     scrollbacks: VecDeque<gtk::Label>,
@@ -180,16 +180,16 @@ struct Window {
 const MAX_SCROLLBACKS: usize = 100;
 
 impl Window {
-    fn new(app: &gtk::Application, args: &Args) -> Self {
-        let win = gtk::ApplicationWindow::new(app);
-        win.set_size_request(args.width, args.height);
+    fn new(app: &adw::Application, args: &Args) -> Self {
+        let win = adw::ApplicationWindow::new(app);
+        win.set_size_request(200, 16);
+        win.set_default_size(args.width, args.height);
         win.set_title(Some(env!("CARGO_PKG_NAME")));
-        win.set_decorated(false);
 
         let scrolled = gtk::ScrolledWindow::builder()
             .hscrollbar_policy(gtk::PolicyType::Never)
             .build();
-        win.set_child(Some(&scrolled));
+        win.set_content(Some(&scrolled));
 
         let vbox = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -312,20 +312,11 @@ fn main() -> Result<(), Error> {
         .expect("Failed to add bus watch");
     }
 
-    let app = gtk::Application::new(
+    let app = adw::Application::new(
         Some(&format!("org.u7fa9.{}", env!("CARGO_PKG_NAME"))),
         gio::ApplicationFlags::FLAGS_NONE,
     );
-    app.connect_startup(|_app| {
-        let display = gdk::Display::default().expect("can't get display");
-        let provider = gtk::CssProvider::new();
-        provider.load_from_data(include_bytes!("css/style.css"));
-        gtk::StyleContext::add_provider_for_display(
-            &display,
-            &provider,
-            gtk::STYLE_PROVIDER_PRIORITY_USER,
-        );
-    });
+    gio::resources_register_include!("styles.gresource").expect("Failed to register resources.");
     app.connect_activate(move |app| {
         let (result_sender, result_receiver) =
             glib::MainContext::channel(glib::source::PRIORITY_DEFAULT);

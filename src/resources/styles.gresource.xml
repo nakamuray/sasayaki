@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/u7fa9/sasayaki/">
+    <file compressed="true">style.css</file>
+    <file compressed="true">style-dark.css</file>
+  </gresource>
+</gresources>
