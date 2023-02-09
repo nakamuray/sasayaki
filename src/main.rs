@@ -138,11 +138,11 @@ fn whisper(
     result_sender: &glib::Sender<(String, bool)>,
     fix: bool,
 ) {
-    let mut params = FullParams::new(SamplingStrategy::Greedy { n_past: 0 });
+    let mut params = FullParams::new(SamplingStrategy::default());
     //params.set_n_threads(4);
     params.set_translate(false);
     if let Some(language) = language {
-        params.set_language(language);
+        params.set_language(Some(language));
     }
     params.set_no_context(true);
     params.set_print_special(false);
